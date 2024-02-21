@@ -17,17 +17,17 @@ public class App {
             frame.setVisible(true);
         });
 
-        // Resolve the DDNS hostname to an IP address
-        InetAddress ddnsAddress;
+        // Specify the IP address directly
+        InetAddress ipAddress;
         try {
-            ddnsAddress = InetAddress.getByName("gameservers.wolfhunter1043.com");
+            ipAddress = InetAddress.getByName("208.109.39.185");
         } catch (UnknownHostException e) {
-            System.err.println("Failed to resolve DDNS hostname.");
+            System.err.println("Failed to resolve IP address.");
             return;
         }
 
-        // Start the server and bind to the DDNS address
-        try (ServerSocket server = new ServerSocket(28040, 50, ddnsAddress)) {
+        // Start the server and bind to the IP address
+        try (ServerSocket server = new ServerSocket(28040, 50, ipAddress)) {
             System.out.println("Server started!");
             new ListChecker().start();
             System.out.println("Pinging server list started");
