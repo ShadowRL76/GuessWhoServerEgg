@@ -6,24 +6,6 @@ import java.util.Enumeration;
 public class App {
 
     public static void main(String[] args) {
-
-        boolean noErrors = true; // Set to false to simulate errors
-
-        // If there are no errors, display the JFrame
-        if (noErrors) {
-            SwingUtilities.invokeLater(() -> {
-                JFrame frame = new JFrame("Server Status");
-                frame.setSize(300, 200);
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-                JLabel label = new JLabel("Server started");
-                label.setHorizontalAlignment(SwingConstants.CENTER);
-                frame.add(label);
-
-                frame.setVisible(true);
-            });
-        }
-
         final String[] ip = new String[1];
         new Thread (() -> {
             try {
