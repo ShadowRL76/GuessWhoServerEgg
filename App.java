@@ -1,44 +1,62 @@
 import javax.swing.*;
 import java.io.IOException;
 import java.net.*;
+import java.util.Enumeration;
 
 public class App {
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Server Status");
-            frame.setSize(300, 200);
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-            JLabel label = new JLabel("Server started");
-            label.setHorizontalAlignment(SwingConstants.CENTER);
-            frame.add(label);
+        boolean noErrors = true; // Set to false to simulate errors
 
-            frame.setVisible(true);
-        });
+        // If there are no errors, display the JFrame
+        if (noErrors) {
+            SwingUtilities.invokeLater(() -> {
+                JFrame frame = new JFrame("Server Status");
+                frame.setSize(300, 200);
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Specify the IP address directly
-        InetAddress ipAddress;
-        try {
-            ipAddress = InetAddress.getByName("208.109.39.185");
-        } catch (UnknownHostException e) {
-            System.err.println("Failed to resolve IP address.");
-            return;
+                JLabel label = new JLabel("Server started");
+                label.setHorizontalAlignment(SwingConstants.CENTER);
+                frame.add(label);
+
+                frame.setVisible(true);
+            });
         }
 
-        // Start the server and bind to the IP address
-        try (ServerSocket server = new ServerSocket(28040, 50, ipAddress)) {
-            System.out.println("Server started!");
-            new ListChecker().start();
-            System.out.println("Pinging server list started");
-
-            while (true) {
-                Socket socket = server.accept();
-                System.out.println("Client Connected");
-                new Connection(socket).start();
+        final String[] ip = new String[1];
+        new Thread (() -> {
+            try {
+                Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+                while (interfaces.hasMoreElements()) {
+                    NetworkInterface networkInterface = interfaces.nextElement();
+                    if (!networkInterface.isLoopback() && networkInterface.isUp()) {
+                        Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+                        while (addresses.hasMoreElements()) {
+                            InetAddress addr = addresses.nextElement();
+                            if (addr.getAddress().length == 4) { // Check for IPv4 addresses
+                                ip[0] = addr.getHostAddress();
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
             }
-        } catch (IOException ex) {
-            System.err.println("Error starting the server: " + ex.getMessage());
-        }
+
+            System.out.println(ip[0]);
+
+            try (ServerSocket server = new ServerSocket(28040)) {
+                System.out.println("Server started!");
+                new ListChecker().start();
+                System.out.println("Pinging server list started");
+                while (true) {
+                    Socket socket = server.accept();
+                    System.out.println("Client Connected");
+                    new Connection(socket).start();
+                }
+            } catch (IOException ex) {
+            }
+
+        }).start();
     }
 }
