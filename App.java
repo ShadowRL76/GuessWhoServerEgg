@@ -45,7 +45,7 @@ public class App {
 
             System.out.println(ip[0]);
 
-            try (ServerSocket server = new ServerSocket(420)) {
+            try (ServerSocket server = new ServerSocket(28040)) {
                 System.out.println("Server started!");
                 new ListChecker().start();
                 System.out.println("Pinging server list started");
